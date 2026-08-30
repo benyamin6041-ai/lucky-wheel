@@ -2,59 +2,38 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>گردونه شانس</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: 'Tahoma', sans-serif; background: #1a1a2e; color: white; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .page { width: 90%; max-width: 400px; padding: 20px; text-align: center; display: none; }
-        .active { display: block !important; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        #wheel-container { position: relative; width: 300px; height: 300px; margin: 0 auto 20px; }
-        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #fff; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
-        .arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff4d4d; z-index: 10; }
-        
-        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 15px; font-size: 1.1rem; font-weight: bold; cursor: pointer; color: white; }
-        #spin-button { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
-        .btn-link { display: block; text-decoration: none; padding: 15px; border-radius: 15px; margin-bottom: 10px; font-weight: bold; color: white; }
-        .prize-btn { background: #00b09b; }
-        .support-btn { background: #444; }
-        
-        .referral-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; margin-top: 20px; }
-        #result-text { font-size: 1.8rem; color: #ffeb3b; margin-bottom: 20px; }
+        body { margin: 0; padding: 0; background: #1a1a2e; color: white; font-family: Tahoma, sans-serif; overflow: hidden; }
+        .page { width: 100vw; height: 100vh; display: none; flex-direction: column; justify-content: center; align-items: center; position: absolute; top: 0; left: 0; }
+        .active { display: flex !important; }
+        #wheel-container { width: 300px; height: 300px; position: relative; }
+        #wheel { width: 100%; height: 100%; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
+        button { padding: 15px 40px; margin-top: 20px; border-radius: 15px; border: none; background: #ff416c; color: white; font-size: 18px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- صفحه ۱: گردونه -->
+    <!-- صفحه اول -->
     <div id="page1" class="page active">
-        <h2>گردونه شانس ✨</h2>
         <div id="wheel-container">
-            <div class="arrow"></div>
-            <canvas id="wheel"></canvas>
+            <canvas id="wheel" width="300" height="300"></canvas>
         </div>
-        <button onclick="spinWheel()" id="spin-button">چرخاندن گردونه</button>
+        <button onclick="spin()">چرخاندن</button>
     </div>
 
-    <!-- صفحه ۲: نتیجه -->
+    <!-- صفحه دوم -->
     <div id="page2" class="page">
-        <h1>تبریک! شما برنده شدید:</h1>
-        <div id="result-text">---</div>
-        <a href="#" id="link-prize" class="btn-link prize-btn">🎁 دریافت جایزه</a>
-        <a href="#" class="btn-link support-btn">📞 پشتیبانی</a>
-        <div class="referral-box">
-            <p>کد معرف شما:</p>
-            <h2 id="ref-code">REF123</h2>
-        </div>
+        <h1>برنده شدید!</h1>
+        <div id="result" style="font-size: 24px; color: #ffeb3b;"></div>
+        <a href="https://script.google.com/macros/s/AKfycbwcvt_--jOR_soR5guN84DL7I6gLNwvRUhgvT0nRdm1M6eTCQBKmAEylv8V-gsXNwgMzQ/exec" style="margin-top:20px; color:white;">دریافت جایزه</a>
     </div>
 
     <script>
-        const prizes = ["شارژ ۱۰", "اینترنت ۲", "شارژ ۲۰", "اینترنت ۵", "شارژ ۵۰", "اینترنت ۱۰"];
-        const colors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A1", "#33FFF5"];
         const canvas = document.getElementById('wheel');
         const ctx = canvas.getContext('2d');
-        canvas.width = 300; canvas.height = 300;
+        const prizes = ["شارژ ۱۰", "اینترنت ۲", "شارژ ۲۰", "اینترنت ۵"];
+        const colors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF"];
         
         // رسم گردونه
         const sector = (2 * Math.PI) / prizes.length;
@@ -64,30 +43,17 @@
             ctx.moveTo(150, 150);
             ctx.arc(150, 150, 150, i * sector, (i + 1) * sector);
             ctx.fill();
-            ctx.save();
-            ctx.translate(150, 150);
-            ctx.rotate(i * sector + sector/2);
-            ctx.textAlign = "right"; ctx.fillStyle = "#fff"; ctx.font = "bold 16px Tahoma";
-            ctx.fillText(p, 130, 5);
-            ctx.restore();
         });
 
-        let rotation = 0;
-        function spinWheel() {
-            document.getElementById('spin-button').disabled = true;
-            rotation += 3600 + Math.floor(Math.random() * 360);
-            canvas.style.transform = `rotate(${rotation}deg)`;
+        let rot = 0;
+        function spin() {
+            rot += 3000 + Math.random() * 1000;
+            canvas.style.transform = `rotate(${rot}deg)`;
             setTimeout(() => {
-                const prizeIndex = Math.floor(((360 - (rotation % 360) + 270) % 360) / (360 / prizes.length));
-                showResult(prizes[prizeIndex]);
-            }, 4100);
-        }
-
-        function showResult(prize) {
-            document.getElementById('page1').classList.remove('active');
-            document.getElementById('page2').classList.add('active');
-            document.getElementById('result-text').innerText = prize;
-            confetti();
+                document.getElementById('page1').classList.remove('active');
+                document.getElementById('page2').classList.add('active');
+                document.getElementById('result').innerText = "جایزه شما آماده است!";
+            }, 4200);
         }
     </script>
 </body>
