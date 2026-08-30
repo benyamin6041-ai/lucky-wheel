@@ -2,37 +2,32 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>گردونه شانس</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
-        :root {
-            --primary: #e91e63;
-            --secondary: #4caf50;
-            --bg: #1a1a2e;
-            --glass: rgba(255, 255, 255, 0.1);
-        }
-        body { font-family: 'Tahoma', sans-serif; background: var(--bg); color: white; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
-        .page { display: none; width: 90%; max-width: 380px; padding: 25px; border-radius: 25px; background: var(--glass); backdrop-filter: blur(15px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); text-align: center; animation: fadeIn 0.5s ease-out; margin: 20px 0; }
-        .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        #wheel-container { position: relative; width: 280px; height: 280px; margin: 20px auto; }
+        body { font-family: 'Tahoma', sans-serif; background: #1a1a2e; color: white; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .page { width: 90%; max-width: 400px; padding: 20px; text-align: center; display: none; }
+        .active { display: block !important; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        #wheel-container { position: relative; width: 300px; height: 300px; margin: 0 auto 20px; }
         #wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #fff; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
-        .arrow { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff4d4d; z-index: 10; }
-        button, .btn { display: block; width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 15px; font-size: 1rem; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.3s; box-sizing: border-box; }
-        #spin-button { background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; }
-        .prize-btn { background: linear-gradient(45deg, #00b09b, #96c93d); color: white; }
-        .support-btn { background: #444; color: white; }
-        .old-prize-btn { background: #ff9800; color: white; }
-        .referral-box { background: rgba(0, 0, 0, 0.3); border: 1px dashed rgba(255, 255, 255, 0.4); padding: 15px; border-radius: 15px; margin: 20px 0; }
-        .code-display { font-family: 'Courier New', Courier, monospace; font-size: 1.6rem; color: #00e676; letter-spacing: 2px; display: block; margin: 10px 0; font-weight: bold; }
-        .copy-btn { background: rgba(255, 255, 255, 0.2); color: white; padding: 5px 15px; border-radius: 10px; cursor: pointer; border: none; }
-        #result-text { font-size: 2rem; color: #ffeb3b; margin: 10px 0; }
-        .status-msg { font-size: 0.9rem; color: #ff8a80; margin-top: 10px; }
+        .arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff4d4d; z-index: 10; }
+        
+        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 15px; font-size: 1.1rem; font-weight: bold; cursor: pointer; color: white; }
+        #spin-button { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+        .btn-link { display: block; text-decoration: none; padding: 15px; border-radius: 15px; margin-bottom: 10px; font-weight: bold; color: white; }
+        .prize-btn { background: #00b09b; }
+        .support-btn { background: #444; }
+        
+        .referral-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; margin-top: 20px; }
+        #result-text { font-size: 1.8rem; color: #ffeb3b; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
+    <!-- صفحه ۱: گردونه -->
     <div id="page1" class="page active">
         <h2>گردونه شانس ✨</h2>
         <div id="wheel-container">
@@ -42,76 +37,57 @@
         <button onclick="spinWheel()" id="spin-button">چرخاندن گردونه</button>
     </div>
 
+    <!-- صفحه ۲: نتیجه -->
     <div id="page2" class="page">
-        <h1>تبریک!</h1>
-        <div id="result-text"></div>
-        <a href="#" id="link-prize" class="btn prize-btn">🎁 دریافت جایزه</a>
-        <a href="#" id="link-support" class="btn support-btn">📞 پشتیبانی</a>
-        <a href="#" id="link-old-prize" class="btn old-prize-btn">🎁 دریافت جایزه قبلی</a>
+        <h1>تبریک! شما برنده شدید:</h1>
+        <div id="result-text">---</div>
+        <a href="#" id="link-prize" class="btn-link prize-btn">🎁 دریافت جایزه</a>
+        <a href="#" class="btn-link support-btn">📞 پشتیبانی</a>
         <div class="referral-box">
-            <span id="referral-code" class="code-display">------</span>
-            <button class="copy-btn" onclick="copyCode()">📋 کپی کد</button>
+            <p>کد معرف شما:</p>
+            <h2 id="ref-code">REF123</h2>
         </div>
     </div>
 
     <script>
-        const MY_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwcvt_--jOR_soR5guN84DL7I6gLNwvRUhgvT0nRdm1M6eTCQBKmAEylv8V-gsXNwgMzQ/exec";
-        const prizes = ["شارژ ۱۰ تومان", "اینترنت ۲ گیگ", "شارژ ۲۰ تومان", "اینترنت ۵ گیگ", "شارژ ۵۰ تومان", "اینترنت ۱۰ گیگ"];
+        const prizes = ["شارژ ۱۰", "اینترنت ۲", "شارژ ۲۰", "اینترنت ۵", "شارژ ۵۰", "اینترنت ۱۰"];
         const colors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A1", "#33FFF5"];
-        
         const canvas = document.getElementById('wheel');
         const ctx = canvas.getContext('2d');
-        const wheelSize = 300;
-        canvas.width = wheelSize;
-        canvas.height = wheelSize;
+        canvas.width = 300; canvas.height = 300;
+        
+        // رسم گردونه
+        const sector = (2 * Math.PI) / prizes.length;
+        prizes.forEach((p, i) => {
+            ctx.beginPath();
+            ctx.fillStyle = colors[i];
+            ctx.moveTo(150, 150);
+            ctx.arc(150, 150, 150, i * sector, (i + 1) * sector);
+            ctx.fill();
+            ctx.save();
+            ctx.translate(150, 150);
+            ctx.rotate(i * sector + sector/2);
+            ctx.textAlign = "right"; ctx.fillStyle = "#fff"; ctx.font = "bold 16px Tahoma";
+            ctx.fillText(p, 130, 5);
+            ctx.restore();
+        });
 
-        let currentRotation = 0;
-
-        function drawWheel() {
-            const sectorAngle = (2 * Math.PI) / prizes.length;
-            for (let i = 0; i < prizes.length; i++) {
-                ctx.beginPath();
-                ctx.fillStyle = colors[i];
-                ctx.moveTo(wheelSize/2, wheelSize/2);
-                ctx.arc(wheelSize/2, wheelSize/2, wheelSize/2, i * sectorAngle, (i + 1) * sectorAngle);
-                ctx.fill();
-                ctx.save();
-                ctx.translate(wheelSize/2, wheelSize/2);
-                ctx.rotate(i * sectorAngle + sectorAngle/2);
-                ctx.textAlign = "right";
-                ctx.fillStyle = "#fff";
-                ctx.font = "bold 18px Tahoma";
-                ctx.fillText(prizes[i], wheelSize/2 - 10, 5);              
-                ctx.restore();   
-            }
-        }
-        drawWheel();
-
+        let rotation = 0;
         function spinWheel() {
-            const btn = document.getElementById('spin-button');
-            btn.disabled = true;
-            btn.style.opacity = "0.5";
-            const totalRotation = (5 * 360) + Math.floor(Math.random() * 360);
-            currentRotation += totalRotation;
-            canvas.style.transform = `rotate(${currentRotation}deg)`;
-
+            document.getElementById('spin-button').disabled = true;
+            rotation += 3600 + Math.floor(Math.random() * 360);
+            canvas.style.transform = `rotate(${rotation}deg)`;
             setTimeout(() => {
-                const prizeIndex = Math.floor(((360 - (currentRotation % 360) + 270) % 360) / (360 / prizes.length));
-                showWinPage(prizes[prizeIndex]);
+                const prizeIndex = Math.floor(((360 - (rotation % 360) + 270) % 360) / (360 / prizes.length));
+                showResult(prizes[prizeIndex]);
             }, 4100);
         }
 
-        function showWinPage(prize) {
-            document.getElementById("page1").classList.remove("active");
-            document.getElementById("page2").classList.add("active");
-            document.getElementById("result-text").innerText = prize;
-            document.getElementById("link-prize").href = MY_SCRIPT_URL;
-            confetti({ particleCount: 150, spread: 70 });
-        }
-
-        function copyCode() {
-            navigator.clipboard.writeText("CODE123");
-            alert("کد کپی شد!");
+        function showResult(prize) {
+            document.getElementById('page1').classList.remove('active');
+            document.getElementById('page2').classList.add('active');
+            document.getElementById('result-text').innerText = prize;
+            confetti();
         }
     </script>
 </body>
